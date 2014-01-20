@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+	<link type="text/css" rel="stylesheet" href="css/main.css"/>
+	<title>My TweetMap</title>
+</head>
+
+<body>
+
+	<div id="upload-container">
+		<div>
+			<h1>
+				Drop your tweets.zip file here!
+				<input type="file" accept="application/zip" id="upload-input"/>
+			</h1>
+		</div>
+	</div>
+	<div id="map"></div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script src="//maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=visualization"></script>
+	<script src="js/zip.js"></script>
+	<script src="js/zip-fs.js"></script>
+	<script src="js/mime-types.js"></script>
+	<script src="js/main.js"></script>
+
+</body>
+</html>
