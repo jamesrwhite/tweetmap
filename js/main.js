@@ -1,13 +1,11 @@
 // Give the user something pretty to look at first
 navigator.geolocation.getCurrentPosition(function(position) {
 
-	var map_options = {
+	new google.maps.Map(document.getElementById('map'), {
 		zoom: 10,
 		center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
 		mapTypeId: google.maps.MapTypeId.ROADMAP
-	};
-
-	var map = new google.maps.Map(document.getElementById('map'), map_options);
+	});
 
 });
 
@@ -192,8 +190,25 @@ function displayTweets() {
 	var heatmap = new google.maps.visualization.HeatmapLayer({
 		data: heatmap_points,
 		dissipating: true,
-		radius: 25,
-		opacity: 0.6
+		radius: 15,
+		opacity: 0.5,
+		maxIntensity: 60,
+		gradient: [
+			'rgba(0, 255, 255, 0)',
+			'rgba(0, 255, 255, 1)',
+			'rgba(0, 191, 255, 1)',
+			'rgba(0, 127, 255, 1)',
+			'rgba(0, 63, 255, 1)',
+			'rgba(0, 0, 255, 1)',
+			'rgba(0, 0, 223, 1)',
+			'rgba(0, 0, 191, 1)',
+			'rgba(0, 0, 159, 1)',
+			'rgba(0, 0, 127, 1)',
+			'rgba(63, 0, 91, 1)',
+			'rgba(127, 0, 63, 1)',
+			'rgba(191, 0, 31, 1)',
+			'rgba(255, 0, 0, 1)'
+		]
 	});
 
 	heatmap.setMap(map);

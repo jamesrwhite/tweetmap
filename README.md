@@ -8,11 +8,6 @@ Demo
 
 http://mytweetmap.jamesrwhite.co.uk
 
-Todo
------
-
-- Better heatmap appearance (possibly using this http://www.patrick-wied.at/static/heatmapjs/example-heatmap-googlemaps.html)
-
 Screenshot
 -----------
 
