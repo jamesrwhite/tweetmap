@@ -17,6 +17,12 @@ body {
 	font-family: 'Lucida Grane', Helvetica, Arial, serif;
 }
 
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
 #map, #upload-container {
 	width: 100%;
 	height: 100%;
@@ -61,4 +67,30 @@ body {
 	color: #ccc;
 	border-color: #aaa;
 	cursor: copy;
+}
+
+footer {
+	background: rgba(0, 0, 0, .5);
+	padding: 1.2em 1em 1em 1em;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	z-index: 20;
+	color: #bbb;
+}
+
+footer a, footer a:visited {
+	color: #bbb;
+}
+
+footer a:hover {
+	color: #ccc;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
 }
