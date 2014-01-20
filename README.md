@@ -12,7 +12,6 @@ Todo
 -----
 
 - Better heatmap appearance (possibly using this http://www.patrick-wied.at/static/heatmapjs/example-heatmap-googlemaps.html)
-- Add screenshots
 
 Screenshot
 -----------
