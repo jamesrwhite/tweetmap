@@ -1,5 +1,5 @@
 // Give the user something pretty to look at first
-navigator.geolocation.getCurrentPosition(function(position) {
+window.navigator.geolocation.getCurrentPosition(function(position) {
 
 	new google.maps.Map(document.getElementById('map'), {
 		zoom: 10,
@@ -20,117 +20,66 @@ var Grailbird = {
 var requestFileSystem = window.webkitRequestFileSystem || window.mozRequestFileSystem || window.requestFileSystem;
 
 // Pro error handling
-function onerror(message) {
+function onError(message) {
 
 	alert(message);
 
 }
 
-// Used to get the zip file contents. Adapted from a zip.js demo
-var model = (function() {
+// Used to handle the entries from the zip file
+function handleEntries(entries, writer, i) {
 
-	var URL = window.webkitURL || window.mozURL || window.URL;
+	// Are we finished? If so, it's probably best not to break the internet and recurse forever
+	if (i === entries.length) {
 
-	return {
-		getEntries : function(file, onend) {
+		// Let the user know we're done
+		$('#upload-container').find('h1').text('Finished!');
 
-			zip.createReader(new zip.BlobReader(file), function(zipReader) {
+		// Display dem tweets
+		displayTweets();
 
-				zipReader.getEntries(onend);
+		// Bye.
+		return;
 
-			}, onerror);
+	}
 
-		}
-	};
+	var entry = entries[i];
+	var file_id = 'tweets_' + entry.filename.substr(15, 7);
 
-})();
+	console.log((+new Date), 'Found File ' + i + ': ' + file_id);
 
-var fileInput = document.getElementById('upload-input');
+	// Get the data from the file
+	entry.getData(writer, function(blob) {
 
-// Fancy hover animations when the user drags a file
-fileInput.ondragover = function () { this.parentNode.className = 'hover'; return false; };
-fileInput.ondragend = function () { this.parentNode.className = ''; return false; };
+		// Create a blob url for the file
+		var blobURL = URL.createObjectURL(blob);
 
-fileInput.addEventListener('change', function() {
+		console.log((+new Date), blobURL);
 
-	// Stop the user uploading more than one file at once
-	fileInput.disabled = true;
+		// Retrieve the contents of the blob, we do this synchronously so that we
+		// can make sure not to spawn too many web workers and crash chrome..
+		$.ajax({
+			async: false,
+			url: blobURL,
+			dataType: 'text'
+		}).done(function(data, status, xhr) {
 
-	// Let the user know we are doing important stuffz and to be patient pls
-	$('#upload-container').find('h1').text('Loading Tweets..');
+			console.log((+new Date), 'XHR complete for: ' + blobURL);
 
-	// Get all the files in the zip file
-	model.getEntries(fileInput.files[0], function(entries) {
+			// Evaluate the Twitter script, this will append objects to Grailbird.data
+			eval(data);
 
-		// Just get the files we need
-		entries = entries.filter(function(element) {
+			// Increment the counter so we can keep track of how many files we've processed
+			i++;
 
-			return element.filename.substr(0, 15) === 'data/js/tweets/';
+			// Done, next!
+			handleEntries(entries, writer, i);
 
 		});
 
-		var entry, file_id, writer = new zip.BlobWriter(), i = 0;
-
-		function handleFiles() {
-
-			// Are we finished? If so, it's probably best not to break the internet and recurse forever
-			if (i === entries.length) {
-
-				// Let the user know we're done
-				$('#upload-container').find('h1').text('Finished!');
-
-				// Display dem tweets
-				displayTweets();
-
-				// Bye.
-				return;
-
-			}
-
-			entry = entries[i];
-			file_id = 'tweets_' + entry.filename.substr(15, 7);
-
-			console.log((+new Date), 'Found File ' + i + ': ' + file_id);
-
-			// Get the data from the file
-			entry.getData(writer, function(blob) {
-
-				// Create a blob url for the file
-				var blobURL = URL.createObjectURL(blob);
-
-				console.log((+new Date), blobURL);
-
-				// Retrieve the contents of the blob, we do this synchronously so that we
-				// can make sure not to spawn too many web workers and crash chrome..
-				$.ajax({
-					async: false,
-					url: blobURL,
-					dataType: 'text'
-				}).done(function(data, status, xhr) {
-
-					console.log((+new Date), 'XHR complete for: ' + blobURL);
-
-					// Evaluate the Twitter script, this will append objects to Grailbird.data
-					eval(data);
-
-					// Increment the counter so we can keep track of how many files we've processed
-					i++;
-
-					// Done, next!
-					handleFiles();
-
-				});
-
-			});
-
-		}
-
-		// Go, go, go!
-		handleFiles();
-
 	});
 
-}, false);
+}
 
 // Used to filter and display all the tweets on a map
 function displayTweets() {
@@ -217,3 +166,55 @@ function displayTweets() {
 	$('#upload-container').fadeOut(1000);
 
 }
+
+// Used to get the zip file contents. Adapted from a zip.js demo
+var model = (function() {
+
+	var URL = window.webkitURL || window.mozURL || window.URL;
+
+	return {
+		getEntries : function(file, onend) {
+
+			zip.createReader(new zip.BlobReader(file), function(zipReader) {
+
+				zipReader.getEntries(onend);
+
+			}, onError);
+
+		}
+	};
+
+})();
+
+var fileInput = document.getElementById('upload-input');
+
+// Fancy hover animations when the user drags a file
+fileInput.ondragover = function () { this.parentNode.className = 'hover'; return false; };
+fileInput.ondragend = function () { this.parentNode.className = ''; return false; };
+
+fileInput.addEventListener('change', function() {
+
+	// Stop the user uploading more than one file at once
+	fileInput.disabled = true;
+
+	// Let the user know we are doing important stuffz and to be patient pls
+	$('#upload-container').find('h1').text('Loading Tweets..');
+
+	// Get all the files in the zip file
+	model.getEntries(fileInput.files[0], function(entries) {
+
+		// Just get the files we need
+		entries = entries.filter(function(element) {
+
+			return element.filename.substr(0, 15) === 'data/js/tweets/';
+
+		});
+
+		var writer = new zip.BlobWriter(), i = 0;
+
+		// Go, go, go!
+		handleEntries(entries, writer, i);
+
+	});
+
+}, false);
