@@ -1,17 +1,19 @@
-My Tweet Map
+tweetmap
 ============
 
 Drag and drop in your twitter archive and visualise all the locations of your tweets as a heat map!
 
+Grab your Twitter data export from [https://twitter.com/settings/account](https://twitter.com/settings/account).
+
 Demo
 -----
 
-http://mytweetmap.jamesrwhite.co.uk
+http://tweetmap.jamesrwhite.co.uk
 
 Screenshot
 -----------
 
-![](https://raw.github.com/jamesrwhite/My-Tweet-Map/master/screenshot.png)
+![](https://raw.github.com/jamesrwhite/tweetmap/master/screenshot.png)
 
 Browser Support
 ----------------
