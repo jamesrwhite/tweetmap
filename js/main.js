@@ -1,12 +1,10 @@
 // Give the user something pretty to look at first
 window.navigator.geolocation.getCurrentPosition(function(position) {
-
 	new google.maps.Map(document.getElementById('map'), {
 		zoom: 10,
 		center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	});
-
 });
 
 // Tell zip.js where it's files are..
@@ -21,17 +19,13 @@ var requestFileSystem = window.webkitRequestFileSystem || window.mozRequestFileS
 
 // Pro error handling
 function onError(message) {
-
 	alert(message);
-
 }
 
 // Used to handle the entries from the zip file
 function handleEntries(entries, writer, i) {
-
 	// Are we finished? If so, it's probably best not to break the internet and recurse forever
 	if (i === entries.length) {
-
 		// Let the user know we're done
 		$('#upload-container').find('h1').text('Finished!');
 
@@ -40,7 +34,6 @@ function handleEntries(entries, writer, i) {
 
 		// Bye.
 		return;
-
 	}
 
 	var entry = entries[i];
@@ -50,7 +43,6 @@ function handleEntries(entries, writer, i) {
 
 	// Get the data from the file
 	entry.getData(writer, function(blob) {
-
 		// Create a blob url for the file
 		var blobURL = URL.createObjectURL(blob);
 
@@ -63,7 +55,6 @@ function handleEntries(entries, writer, i) {
 			url: blobURL,
 			dataType: 'text'
 		}).done(function(data, status, xhr) {
-
 			console.log((+new Date), 'XHR complete for: ' + blobURL);
 
 			// Evaluate the Twitter script, this will append objects to Grailbird.data
@@ -74,40 +65,27 @@ function handleEntries(entries, writer, i) {
 
 			// Done, next!
 			handleEntries(entries, writer, i);
-
 		});
-
 	});
-
 }
 
 // Used to filter and display all the tweets on a map
 function displayTweets() {
-
 	// Filter down the Grailbard mega object into just what we need.
 	// And yes, I did just learn how the map/reduce/filter functions work..
 	var coordinates = Object.keys(Grailbird.data).map(function(value, index) {
-
 		return Grailbird.data[value].filter(function(value, index) {
-
 			return typeof value.geo.coordinates != 'undefined';
-
 		}).map(function(value, index) {
-
 			return value.geo.coordinates;
-
 		});
 
 	}).reduce(function(previous, current, index, array) {
-
 		for (var id in current) {
-
 			previous.push(current[id]);
-
 		}
 
 		return previous;
-
 	}, []);
 
 	var heatmap_points = [],
@@ -115,14 +93,12 @@ function displayTweets() {
 		lon_average = 0;
 
 	for (var coordinate in coordinates) {
-
 		lat_average += coordinates[coordinate][0];
 		lon_average += coordinates[coordinate][1];
 
 		heatmap_points.push(
 			new google.maps.LatLng(coordinates[coordinate][0], coordinates[coordinate][1])
 		);
-
 	}
 
 	lat_average = lat_average / heatmap_points.length;
@@ -164,26 +140,19 @@ function displayTweets() {
 
 	// Hide the overlay
 	$('#upload-container').fadeOut(1000);
-
 }
 
 // Used to get the zip file contents. Adapted from a zip.js demo
 var model = (function() {
-
 	var URL = window.webkitURL || window.mozURL || window.URL;
 
 	return {
-		getEntries : function(file, onend) {
-
+		getEntries: function(file, onend) {
 			zip.createReader(new zip.BlobReader(file), function(zipReader) {
-
 				zipReader.getEntries(onend);
-
 			}, onError);
-
 		}
 	};
-
 })();
 
 var fileInput = document.getElementById('upload-input');
@@ -193,7 +162,6 @@ fileInput.ondragover = function () { this.parentNode.className = 'hover'; return
 fileInput.ondragend = function () { this.parentNode.className = ''; return false; };
 
 fileInput.addEventListener('change', function() {
-
 	// Stop the user uploading more than one file at once
 	fileInput.disabled = true;
 
@@ -202,19 +170,14 @@ fileInput.addEventListener('change', function() {
 
 	// Get all the files in the zip file
 	model.getEntries(fileInput.files[0], function(entries) {
-
 		// Just get the files we need
 		entries = entries.filter(function(element) {
-
 			return element.filename.substr(0, 15) === 'data/js/tweets/';
-
 		});
 
 		var writer = new zip.BlobWriter(), i = 0;
 
 		// Go, go, go!
 		handleEntries(entries, writer, i);
-
 	});
-
 }, false);
