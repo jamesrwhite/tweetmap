@@ -8,7 +8,7 @@ Grab your Twitter data export from [https://twitter.com/settings/account](https:
 Demo
 -----
 
-https://tweetmap.jamesrwhite.co.uk
+https://jamesrwhite.github.io/tweetmap/
 
 Screenshot
 -----------
